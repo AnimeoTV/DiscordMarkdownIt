@@ -190,6 +190,7 @@ export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper) {
                 type    : "emoji",
                 name    : (token.info as any).name,
                 url     : `https://cdn.discordapp.com/emojis/${(token.info as any).id}`,
+                animated: (token.info as any).animated,
             };
         }
 
