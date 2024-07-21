@@ -1,7 +1,7 @@
 import { StateInline } from "markdown-it/index.js";
 
 function postProcessEmphasis(state: StateInline, delimiters: StateInline.Delimiter[]) {
-    const max = delimiters.length
+    const max = delimiters.length;
 
     for (let i = (max - 1); i >= 0; i--) {
         const startDelim = delimiters[i]!;
@@ -96,97 +96,14 @@ export default {
 
                 // Boolean flags that determine if this delimiter could open or close
                 // an emphasis.
-                open    : scanned.can_open,
-                close   : scanned.can_close,
+                open    : true,
+                close   : true,
             });
         }
 
         state.pos += scanned.length;
 
         return true;
-
-        // const max               = state.posMax;
-        // const start             = state.pos;
-        // const startCharacter    = state.src.charCodeAt(start);
-        // let tag                 = "em";
-        // let count               = 1;
-
-        // console.log(state.pos, state.src.slice(state.pos, state.posMax));
-
-        // function getMarkupLength() : [ number, number ] {
-        //     let start   = pos;
-        //     let length  = 0;
-
-        //     while (pos < max && state.src.charCodeAt(pos) === startCharacter) {
-        //         length++;
-        //         pos++;
-        //     }
-
-        //     // Fix start pos and count.
-        //     if (count < length)
-        //         start += (length - count);
-
-        //     return [ start, length ];
-        // }
-
-        // // Ensure the first character is an emphasis character.
-        // if (startCharacter !== 0x2A /* * */ && startCharacter !== 0x5F /* _ */ && startCharacter !== 0x7C /* | */)
-        //     return false;
-
-        // // Check spoiler tag.
-        // if (startCharacter === 0x7C) {
-        //     if (state.src.charCodeAt(start + 1) !== startCharacter)
-        //         return false;
-
-        //     count   = 2;
-        //     tag     = "spoiler";
-
-        // // Check if the emphasis is "bold" or "underline", otherwise it's "italic".
-        // } else if (state.src.charCodeAt(start + 1) === startCharacter) {
-        //     count   = 2;
-        //     tag     = (startCharacter === 0x2A)
-        //         ? "strong"
-        //         : "underline";
-        // }
-
-        // // Fix position.
-        // let pos = start + count;
-
-        // // Scan for the closing delimiter.
-        // while (pos < max) {
-        //     const [ markupEndAt, markupLength ] = getMarkupLength();
-
-        //     if (markupLength >= count) {
-
-        //         if (!silent) {
-        //             const markup = (count === 1)
-        //                 ? String.fromCharCode(startCharacter)
-        //                 : String.fromCharCode(startCharacter, startCharacter);
-
-        //             const tokenOpen = state.push(`${tag}_open`, tag, 1);
-
-        //             tokenOpen.markup = markup;
-
-        //             state.pos           = start + count;
-        //             state.posMax        = markupEndAt;
-        //             state.md.inline.tokenize(state);
-
-        //             const tokenClose = state.push(`${tag}_close`, tag, -1);
-
-        //             tokenClose.markup   = markup;
-
-        //             state.pos           = markupEndAt + count;
-        //             state.posMax        = max;
-        //         }
-
-        //         return true;
-
-        //     } else {
-        //         pos++;
-        //     }
-        // }
-
-        // return false;
     },
 
     postProcess(state: StateInline): boolean {
