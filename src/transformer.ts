@@ -30,10 +30,6 @@ function serializeTokens(tokens: Token[]): MarkdownTokenEntry[] {
     while (pos < tokens.length) {
         const token = tokens[pos++]!;
 
-        if (token.type === undefined) {
-            console.log(tokens)
-        }
-
         if (token.type.endsWith("_open")) {
             stack.push({ token, children: [] });
 
@@ -186,11 +182,14 @@ export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper) {
         }
 
         if (token.type === "emoji") {
+            const infos = token.info as any;
+
             return {
-                type    : "emoji",
-                name    : (token.info as any).name,
-                url     : `https://cdn.discordapp.com/emojis/${(token.info as any).id}`,
-                animated: (token.info as any).animated,
+                type        : "emoji",
+                id          : infos.id,
+                name        : infos.name,
+                animated    : infos.animated,
+                url         : `https://cdn.discordapp.com/emojis/${infos.id}.${infos.animated ? `gif` : `png`}`,
             };
         }
 
@@ -226,9 +225,9 @@ export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper) {
             return content;
         }
 
-        console.warn(token);
-
-        return "**ERREUR PARSEUR**";
+        return {
+            type: "unsupported_token",
+        };
     }
 
     return serializeTokens(tokens).map(renderToken);
