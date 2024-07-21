@@ -1,5 +1,17 @@
 import { StateInline } from "markdown-it/index.js";
 
+function getTag(marker: number, isStrong: boolean) {
+    if (isStrong) {
+        switch (marker) {
+            case 0x5F /* | */   : return "underline";
+            case 0x2A /* * */   : return "strong";
+            default /* | */     : return "spoiler";
+        }
+    }
+
+    return "em";
+}
+
 function postProcessEmphasis(state: StateInline, delimiters: StateInline.Delimiter[]) {
     const max = delimiters.length;
 
@@ -31,11 +43,7 @@ function postProcessEmphasis(state: StateInline, delimiters: StateInline.Delimit
             delimiters[startDelim.end + 1]!.token === endDelim!.token + 1;
 
         const ch    = String.fromCharCode(startDelim.marker);
-        const tag   = isStrong
-            ? (startDelim.marker === 0x7C)
-                ? "spoiler"
-                : "strong"
-            : "em";
+        const tag   = getTag(startDelim.marker, isStrong)
 
         const token_o   = state.tokens[startDelim.token]!;
         token_o.type    = `${tag}_open`;
@@ -72,6 +80,11 @@ export default {
             return false;
 
         const scanned = state.scanDelims(state.pos, (marker === 0x2A || marker === 0x7C));
+
+        // Special case for spoilers, which must be surrounded by a strong marker
+        // ||like this|| and not |like this|.
+        if (marker === 0x7C && scanned.length !== 2)
+            return false;
 
         for (let i = 0; i < scanned.length; i++) {
             const token = state.push("text", "", 0);
