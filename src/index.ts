@@ -40,5 +40,3 @@ export function createDiscordMarkdownParser() {
 }
 
 export * from "./transformer.js";
-
-// console.log(createDiscordMarkdownParser().parse("Le problème vient d'être corrigé", {}));

@@ -1,4 +1,4 @@
-import { StateInline, Token } from "markdown-it/index.js";
+import { Token } from "markdown-it/index.js";
 
 
 //////////////////////////////////////////////////
@@ -11,10 +11,98 @@ type MarkdownTokenEntry = {
     children    : MarkdownTokenEntry[];
 };
 
-type MarkdownMapper = {
-    mention(type: string, id: string): any;
+type MapperMentionType = "user" | "role" | "channel";
+
+type MapperUserMentionResult = {
+    color   : string;
+    name    : string;
 };
 
+type MapperRoleMentionResult = {
+    name            : string;
+    color           : string;
+    unicodeEmoji    : string;
+    icon            : string;
+};
+type MapperChannelMentionResult = {
+    type    : string;
+    name    : string;
+};
+
+type MapperMentionResult = MapperUserMentionResult
+    | MapperRoleMentionResult
+    | MapperChannelMentionResult
+    | void;
+
+type MarkdownMapper = {
+    mention?: (type: MapperMentionType, id: string) => MapperMentionResult;
+};
+
+type MarkdownTransformedBlock = {
+    type        : "title" | "subtitle" | "subtext" | "blockquote";
+    content     : MarkdownTransformedNode[];
+};
+
+type MarkdownTransformedInline = {
+    type        : "italic" | "bold" | "underline" | "spoiler" | "strikethrough" | "text";
+    content     : MarkdownTransformedNode[];
+};
+
+type MarkdownTransformedInlineString = {
+    type        : "code_inline" | "unicode_emoji";
+    content     : string;
+};
+
+type MarkdownTransformedLink = {
+    type        : "link";
+    content     : MarkdownTransformedNode[];
+    url         : string;
+};
+
+type MarkdownTransformedEmoji = {
+    type        : "emoji";
+    id          : string;
+    name        : string;
+    animated    : boolean;
+    url         : string;
+};
+
+type MarkdownTransformedMention = {
+    type        : "mention";
+    subType     : "here" | "everyone";
+} | {
+    type        : "mention"
+    subType     : "user" | "channel" | "role";
+    id          : string;
+    extra       : any;
+};
+
+type MarkdownTransformedList = {
+    type        : "list";
+    items       : MarkdownTransformedNode[];
+};
+
+type MarkdownTransformedCodeBlock = {
+    type        : "code_block";
+    lang        : string;
+    content     : string;
+};
+
+type MarkdownTransformedUnsupported = {
+    type        : "unsupported_token";
+};
+
+type MarkdownTransformedNode = string
+    | MarkdownTransformedBlock
+    | MarkdownTransformedInline
+    | MarkdownTransformedInlineString
+    | MarkdownTransformedLink
+    | MarkdownTransformedEmoji
+    | MarkdownTransformedMention
+    | MarkdownTransformedList
+    | MarkdownTransformedCodeBlock
+    | MarkdownTransformedUnsupported
+    | MarkdownTransformedNode[];
 
 
 //////////////////////////////////////////////////
@@ -69,11 +157,11 @@ function serializeTokens(tokens: Token[]): MarkdownTokenEntry[] {
     return content;
 }
 
-export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper) {
+export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper = {}): MarkdownTransformedNode[] {
 
-    function renderToken({ token, children }: MarkdownTokenEntry): any {
+    function renderToken({ token, children }: MarkdownTokenEntry): MarkdownTransformedNode {
 
-        function renderChildren(children: MarkdownTokenEntry[]): any {
+        function renderChildren(children: MarkdownTokenEntry[]): MarkdownTransformedNode[] {
             return children.flatMap(renderToken).filter((obj) => obj);
         }
 
@@ -125,7 +213,7 @@ export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper) {
             return {
                 type    : "link",
                 content : renderChildren(children),
-                url     : token.attrs?.find(([ name ]) => name === "href")?.[1],
+                url     : token.attrs?.find(([ name ]) => name === "href")?.[1]!,
             };
         }
 
@@ -182,14 +270,12 @@ export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper) {
         }
 
         if (token.type === "emoji") {
-            const infos = token.info as any;
-
             return {
                 type        : "emoji",
-                id          : infos.id,
-                name        : infos.name,
-                animated    : infos.animated,
-                url         : `https://cdn.discordapp.com/emojis/${infos.id}.${infos.animated ? `gif` : `png`}`,
+                id          : token.meta.id,
+                name        : token.meta.name,
+                animated    : token.meta.animated,
+                url         : `https://cdn.discordapp.com/emojis/${token.meta.id}.${token.meta.animated ? `gif` : `png`}`,
             };
         }
 
@@ -207,10 +293,10 @@ export function transformMarkdown(tokens: Token[], mapper: MarkdownMapper) {
         }
 
         if (token.type === "mention") {
-            const content = {
+            const content: MarkdownTransformedMention = {
                 type    : "mention",
-                subType : (token.info as any).type,
-                id      : (token.info as any).id || null,
+                subType : token.meta.type,
+                id      : token.meta.id,
                 extra   : null,
             };
 

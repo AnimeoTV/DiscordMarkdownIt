@@ -92,7 +92,6 @@ export default {
             token.content = String.fromCharCode(marker)
 
             state.delimiters.push({
-                jump: 0,
 
                 // Char code of the starting marker (number).
                 marker,

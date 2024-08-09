@@ -1,17 +1,22 @@
 {
     "name": "@animeo/markdown",
-    "version": "1.0.5",
-    "main": "dist/index.js",
+    "version": "1.0.7",
     "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.js",
     "scripts": {
-        "dist": "tsc"
+        "build": "tsc"
     },
+    "files": [
+        "dist/**/*.js",
+        "dist/**/*.ts"
+    ],
     "devDependencies": {
-        "@types/node": "^20.12.7",
-        "typescript": "^5.4.5"
+        "@types/node": "^22.2.0",
+        "typescript": "^5.5.4"
     },
     "dependencies": {
-        "@types/markdown-it": "^14.1.1",
+        "@types/markdown-it": "^14.1.2",
         "markdown-it": "^14.1.0"
     }
 }
