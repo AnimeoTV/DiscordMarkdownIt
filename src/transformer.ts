@@ -6,60 +6,61 @@ import { Token } from "markdown-it/index.js";
 //////////////////////////////////////////////////
 
 
-type MarkdownTokenEntry = {
+export type MarkdownTokenEntry = {
     token       : Token;
     children    : MarkdownTokenEntry[];
 };
 
-type MapperMentionType = "user" | "role" | "channel";
+export type MapperMentionType = "user" | "role" | "channel";
 
-type MapperUserMentionResult = {
+export type MapperUserMentionResult = {
     color   : string;
     name    : string;
 };
 
-type MapperRoleMentionResult = {
+export type MapperRoleMentionResult = {
     name            : string;
     color           : string;
     unicodeEmoji    : string;
     icon            : string;
 };
-type MapperChannelMentionResult = {
+
+export type MapperChannelMentionResult = {
     type    : string;
     name    : string;
 };
 
-type MapperMentionResult = MapperUserMentionResult
+export type MapperMentionResult = MapperUserMentionResult
     | MapperRoleMentionResult
     | MapperChannelMentionResult
     | void;
 
-type MarkdownMapper = {
+export type MarkdownMapper = {
     mention?: (type: MapperMentionType, id: string) => MapperMentionResult;
 };
 
-type MarkdownTransformedBlock = {
+export type MarkdownTransformedBlock = {
     type        : "title" | "subtitle" | "subtext" | "blockquote";
     content     : MarkdownTransformedNode[];
 };
 
-type MarkdownTransformedInline = {
+export type MarkdownTransformedInline = {
     type        : "italic" | "bold" | "underline" | "spoiler" | "strikethrough" | "text";
     content     : MarkdownTransformedNode[];
 };
 
-type MarkdownTransformedInlineString = {
+export type MarkdownTransformedInlineString = {
     type        : "code_inline" | "unicode_emoji";
     content     : string;
 };
 
-type MarkdownTransformedLink = {
+export type MarkdownTransformedLink = {
     type        : "link";
     content     : MarkdownTransformedNode[];
     url         : string;
 };
 
-type MarkdownTransformedEmoji = {
+export type MarkdownTransformedEmoji = {
     type        : "emoji";
     id          : string;
     name        : string;
@@ -67,7 +68,7 @@ type MarkdownTransformedEmoji = {
     url         : string;
 };
 
-type MarkdownTransformedMention = {
+export type MarkdownTransformedMention = {
     type        : "mention";
     subType     : "here" | "everyone";
 } | {
@@ -77,22 +78,22 @@ type MarkdownTransformedMention = {
     extra       : any;
 };
 
-type MarkdownTransformedList = {
+export type MarkdownTransformedList = {
     type        : "list";
     items       : MarkdownTransformedNode[];
 };
 
-type MarkdownTransformedCodeBlock = {
+export type MarkdownTransformedCodeBlock = {
     type        : "code_block";
     lang        : string;
     content     : string;
 };
 
-type MarkdownTransformedUnsupported = {
+export type MarkdownTransformedUnsupported = {
     type        : "unsupported_token";
 };
 
-type MarkdownTransformedNode = string
+export type MarkdownTransformedNode = string
     | MarkdownTransformedBlock
     | MarkdownTransformedInline
     | MarkdownTransformedInlineString
