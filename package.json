@@ -5,11 +5,15 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.js",
     "scripts": {
-        "build": "tsc"
+        "build": "tsc",
+        "prepare": "npm run build",
+        "prepack": "npm run build"
     },
     "files": [
         "dist/**/*.js",
-        "dist/**/*.ts"
+        "dist/**/*.ts",
+        "src/**/*.ts",
+        "tsconfig.json"
     ],
     "devDependencies": {
         "@types/node": "^22.2.0",
